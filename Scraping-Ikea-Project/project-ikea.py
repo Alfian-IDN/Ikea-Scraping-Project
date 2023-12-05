@@ -50,7 +50,6 @@ def scraping(soup, product_url):
 
 def access_page_selenium(url, driver):
         driver.get(url)
-        if "Recommended" in url:
             try:
                 WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.CLASS_NAME, 'd-flex flex-row')))
             except TimeoutException:
@@ -77,7 +76,7 @@ if __name__ == "__main__":
                 get_catalogue_urls_product = collect_link_products(f"https://www.ikea.co.id/in/produk/ruang-kerja-kantor?sort=SALES&page={page}", driver)
                 print(len(get_catalogue_urls_product))
                 print(f"acessing_page : {page}")
-                page = page + 1
+           
                 if len(get_catalogue_urls_product) == 0:
                         break
                 else: 
@@ -85,9 +84,15 @@ if __name__ == "__main__":
                                 print(f"Processing_Product_Url : {product_url}")
                                 get_product_Data = access_page_selenium(product_url, driver)
                                 if get_product_Data: 
-                                        result = scraping(get_product_Data, product_url=product_url)
-                                        print(result)
-                                        final_result.append(result)
+                                       try: 
+                                                result = scraping(get_product_Data, product_url=product_url)
+                                                print(result)
+                                                final_result.append(result)
+                                        except Exception as e:
+                                                  print(f"Error processing {product_url}: {e}")
+                
+                page +=1
+                time.sleep(10)
                                                
     
         df = pd.DataFrame(final_result)
